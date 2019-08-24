@@ -3,17 +3,16 @@ import json
 import django_eventstream.views
 from django.conf.urls import url
 from django.contrib.admin import ModelAdmin
-from django.contrib.admin.templatetags.admin_list import results, result_list
+from django.contrib.admin.templatetags.admin_list import results
 from django.contrib.admin.views.main import ChangeList
 from django.core import serializers
 from django.shortcuts import render
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
+from django.utils.http import urlencode
 
 from django_realtime_admin.utils import get_channel_name_for_model, register_post_save_hook
 
 
-class RealTimeMixin(ModelAdmin):
+class RealTimeModelAdmin(ModelAdmin):
     realtime = True
     change_list_template = 'admin/django_realtime_admin/change_list.html'
 
@@ -34,7 +33,6 @@ class RealTimeMixin(ModelAdmin):
            url(r'^(?P<obj_id>\d+)/row/', self.obj_row, name='%s_%s_row' % info)
         ] + super().get_urls()
 
-    @method_decorator(csrf_exempt)
     def obj_row(self, request, obj_id):
         body = json.loads(request.body)
         item = next(serializers.deserialize('python', body['data']))
@@ -65,6 +63,25 @@ class RealTimeMixin(ModelAdmin):
         result = next(results(cl))
         return render(request, 'admin/django_realtime_admin/row.html',
                       {'result': result, 'class_name': body['className']})
+
+    def get_preserved_filters(self, request):
+        """
+        Returns the preserved filters querystring.
+        """
+        match = request.resolver_match
+        if self.preserve_filters and match:
+            opts = self.model._meta
+            current_url = '%s:%s' % (match.app_name, match.url_name)
+            changelist_url = 'admin:%s_%s_changelist' % (opts.app_label, opts.model_name)
+            row_url = 'admin:%s_%s_row' % (opts.app_label, opts.model_name)
+            if current_url == changelist_url or current_url == row_url:
+                preserved_filters = request.GET.urlencode()
+            else:
+                preserved_filters = request.GET.get('_changelist_filters')
+
+            if preserved_filters:
+                return urlencode({'_changelist_filters': preserved_filters})
+        return ''
 
 
 class SimpleRowChangeList(ChangeList):

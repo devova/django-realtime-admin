@@ -9,7 +9,8 @@
             $.each(updatesUrls, function (idx, updatesUrl) {
                 const es = new ReconnectingEventSource(updatesUrl),
                     objPk = updatesUrl.split('/')[4],
-                    rowUrl = updatesUrl.replace('updates', 'row');
+                    rowUrl = updatesUrl.replace('updates', 'row') +
+                        window.location.href.slice(window.location.href.indexOf('?'));
 
                 var checkbox = $('#result_list input[name=_selected_action][value=' + objPk + ']'),
                     row = checkbox.parent().parent();
@@ -23,7 +24,6 @@
                         url: rowUrl,
                         data: JSON.stringify({className: row[0].className, data: $.parseJSON(e.data)}),
                         success: function (html) {
-                            console.log(html);
                             row.replaceWith(html);
 
                             checkbox = $('#result_list input[name=_selected_action][value=' + objPk + ']');
@@ -43,6 +43,7 @@
                                 row.removeClass('object-updated');
                             }, 500)
                         },
+                        beforeSend: function(xhr){xhr.setRequestHeader('X-CSRFToken', csrfmiddlewaretoken);},
                         contentType: "application/json",
                         dataType: 'html',
                     });

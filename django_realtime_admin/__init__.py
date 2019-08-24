@@ -5,4 +5,4 @@ except DistributionNotFound:
     # package is not installed
     pass
 
-from django_realtime_admin.main import RealTimeMixin
+from django_realtime_admin.main import RealTimeModelAdmin
