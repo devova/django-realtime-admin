@@ -26,11 +26,10 @@ class RealTimeModelAdmin(ModelAdmin):
     def get_urls(self):
         info = self.model._meta.app_label, self.model._meta.model_name
         return [
-           # specify a list of dynamic channels using formatting based on view keywords
-           url(r'^(?P<obj_id>\d+)/updates/', django_eventstream.views.events,
-               {'format-channels': [get_channel_name_for_model(self.model)]},
-               name='%s_%s_updates' % info),
-           url(r'^(?P<obj_id>\d+)/row/', self.obj_row, name='%s_%s_row' % info)
+            url(r'^(?P<obj_id>\d+)/updates/', django_eventstream.views.events,
+                {'format-channels': [get_channel_name_for_model(self.model)]},
+                name='%s_%s_updates' % info),
+            url(r'^(?P<obj_id>\d+)/row/', self.obj_row, name='%s_%s_row' % info)
         ] + super().get_urls()
 
     def obj_row(self, request, obj_id):

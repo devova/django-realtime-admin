@@ -6,3 +6,5 @@ except DistributionNotFound:
     pass
 
 from django_realtime_admin.main import RealTimeModelAdmin
+
+__all__ = ['RealTimeModelAdmin']
