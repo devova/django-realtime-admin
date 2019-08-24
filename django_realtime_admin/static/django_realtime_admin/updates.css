@@ -4,3 +4,14 @@
     -ms-transition: background-color 500ms linear;
     transition: background-color 500ms linear;
 }
+
+.enable_real_time_updates {
+    position: fixed;
+    left: 50px;
+    bottom: 0;
+
+    padding: 10px;
+    background-color: #e7eef1;
+    border: 2px solid #417690;
+    border-bottom-width: 0;
+}
