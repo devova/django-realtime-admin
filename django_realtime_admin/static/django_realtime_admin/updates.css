@@ -1,0 +1,6 @@
+.object-updated {
+    background-color: #e3f9e0 !important;
+    -webkit-transition: background-color 500ms linear;
+    -ms-transition: background-color 500ms linear;
+    transition: background-color 500ms linear;
+}
