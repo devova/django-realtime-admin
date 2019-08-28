@@ -65,7 +65,8 @@ class RealTimeModelAdmin(ModelAdmin):
                       {'result': result, 'class_name': body['className']})
 
     def bulk_update(self, request, ids=None, **kwargs):
-        kwargs['channels'] = [get_channel_name_for_model(self.model).format(obj_id=id) for id in ids.split('/')]
+        kwargs['channels'] = [get_channel_name_for_model(self.model).format(obj_id=id)
+                              for id in ids.split('/')]
         return django_eventstream.views.events(request, **kwargs)
 
     def get_preserved_filters(self, request):
