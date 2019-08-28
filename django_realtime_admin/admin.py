@@ -26,6 +26,7 @@ class RealTimeModelAdmin(ModelAdmin):
     def get_urls(self):
         info = self.model._meta.app_label, self.model._meta.model_name
         return [
+            url(r'^updates/(?P<ids>(\d+\/?)+)', self.bulk_update, name='%s_%s_bulk_updates' % info),
             url(r'^(?P<obj_id>\d+)/updates/', django_eventstream.views.events,
                 {'format-channels': [get_channel_name_for_model(self.model)]},
                 name='%s_%s_updates' % info),
@@ -62,6 +63,10 @@ class RealTimeModelAdmin(ModelAdmin):
         result = next(results(cl))
         return render(request, 'admin/django_realtime_admin/row.html',
                       {'result': result, 'class_name': body['className']})
+
+    def bulk_update(self, request, ids=None, **kwargs):
+        kwargs['channels'] = [get_channel_name_for_model(self.model).format(obj_id=id) for id in ids.split('/')]
+        return django_eventstream.views.events(request, **kwargs)
 
     def get_preserved_filters(self, request):
         """

@@ -5,6 +5,6 @@ except DistributionNotFound:
     # package is not installed
     pass
 
-from django_realtime_admin.main import RealTimeModelAdmin
+from django_realtime_admin.admin import RealTimeModelAdmin
 
 __all__ = ['RealTimeModelAdmin']
